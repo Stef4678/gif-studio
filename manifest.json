@@ -1,0 +1,16 @@
+{
+  "id": "V2G1A2B3C4D5E",
+  "version": "1.0.0",
+  "platform": "all",
+  "arch": "all",
+  "name": "GIF Studio",
+  "logo": "/logo.png",
+  "keywords": ["gif", "video", "converter", "ffmpeg"],
+  "dependencies": ["ffmpeg"],
+  "devTools": false,
+  "main": {
+    "url": "index.html",
+    "width": 720,
+    "height": 700
+  }
+}
