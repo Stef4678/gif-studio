@@ -153,3 +153,7 @@ Two options:
 - **Caption text doesn't show** — ffmpeg needs a font available on the system; plain text and emojis work on a standard install. A missing subtitle file will fail the conversion.
 - **Style effects are experimental** — they use ffmpeg's filtergraph heavily and some (ASCII, pixel-sort, rain/snow/dust, cinemagraph) are approximations; if one fails or looks off, try the Filter dropdown instead. Heavy styles (glitch, kaleidoscope, ASCII) run at a reduced resolution to keep memory reasonable.
 - **Transparent GIF** — only possible via **Chroma key** (removes a solid background). Regular videos have no alpha, so "transparent" without a green/blue screen isn't available.
+
+## License
+
+MIT © 2026 Kerekes Stefan
