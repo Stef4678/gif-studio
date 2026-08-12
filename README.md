@@ -3,7 +3,6 @@
 <img width="700" alt="Screenshot 2026-08-12 220048" src="https://github.com/user-attachments/assets/31190731-0ded-4939-8ea7-d5e86036cdf1" />
 <img width="700" alt="Screenshot 2026-08-12 220115" src="https://github.com/user-attachments/assets/4ac97136-e905-47e8-b614-5093de66e2ac" />
 <img width="700" alt="Screenshot 2026-08-12 224213" src="https://github.com/user-attachments/assets/9623c290-369e-4e6f-b3f0-55a6a8838c07" />
-<img width="700" alt="combined-image" src="https://github.com/user-attachments/assets/73a18fc6-0574-4af5-a362-b2b41ca481cb" />
 
 A [Eagle](https://eagle.cool) plugin that converts any video in your library into an animated GIF, using Eagle's official FFmpeg dependency plugin. The result is auto-imported back into your library, in the same folder as the source video.
 
