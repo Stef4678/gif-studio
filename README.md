@@ -154,6 +154,11 @@ Two options:
 - **Style effects are experimental** — they use ffmpeg's filtergraph heavily and some (ASCII, pixel-sort, rain/snow/dust, cinemagraph) are approximations; if one fails or looks off, try the Filter dropdown instead. Heavy styles (glitch, kaleidoscope, ASCII) run at a reduced resolution to keep memory reasonable.
 - **Transparent GIF** — only possible via **Chroma key** (removes a solid background). Regular videos have no alpha, so "transparent" without a green/blue screen isn't available.
 
+## Contact
+
+- GitHub: [Stef4678/gif-studio](https://github.com/Stef4678/gif-studio)
+- Email: [stefaninfp@gmail.com](mailto:stefaninfp@gmail.com)
+
 ## License
 
 MIT © 2026 Kerekes Stefan
