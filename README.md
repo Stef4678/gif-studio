@@ -28,6 +28,7 @@ Two options:
 
 **Option C — packaged release**
 - The **Releases** tab of this repository ships `GifStudio_*.eagleplugin` — the package format the Eagle Plugin Center uses.
+- Download `GifStudio_*.eagleplugin` from the **Releases** tab and open (execute) the file — Eagle will launch and add it as a development plugin automatically.
 - You can also produce one from your own copy: press **P** to open the plugin panel → right-click **GIF Studio** → **Pack Plugin**, then choose a save path.
 
 ## Usage
