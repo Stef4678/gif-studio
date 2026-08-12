@@ -139,30 +139,6 @@ Two options:
 5. Click **Convert to GIF**. A quick low-resolution preview of the clip with your current settings appears first — click **Convert to GIF** on the preview to run the full encode (the progress bar shows encoding progress), or **Edit settings** to tweak and re-preview.
 6. When it's done, the GIF has already been added to your Eagle library — in the **same folder** as the source video — tagged `gif`. You can click **Convert another** to keep going.
 
-## Publishing to the Eagle Plugin Center
-
-Ready to share it? This plugin can be submitted to the official [Eagle Plugin Center](https://eagle.cool/plugins):
-
-1. Produce a `.eagleplugin` — press **P** in Eagle to open the plugin panel, right-click **GIF Studio**, and choose **Pack Plugin**, then pick a save path (or grab the one from this repo's **Releases**).
-2. Sign in to the Eagle plugin submission page with your eagle.cool account.
-3. Click **Submit** → **Submit Plugin** → **Upload**, and select the `.eagleplugin` file.
-4. Fill in the introduction (name, description, screenshots/cover, icon) and the notes for this version.
-5. Add a **support contact** — an email address, or a link to this repository.
-6. Submit. The plugin is scanned automatically and then human-reviewed before it appears in the Plugin Center.
-
-## Notes
-
-- Temp files (the palette + intermediate GIF) are written to your system temp folder and cleaned up automatically. If importing into Eagle ever fails, the finished GIF is left at the path shown in the error dialog so you can grab it manually.
-- The plugin is a Window Plugin: the settings window opens when you run it. Nothing runs in the background.
-- `tools/gen-logo.js` regenerates `logo.png` with no dependencies: `node tools/gen-logo.js`.
-
-## How it works
-
-- Reads the selected items via `eagle.item.getSelected()`.
-- Probes the video with `ffprobe` (from `eagle.extraModule.ffmpeg`) to pre-fill duration / resolution / fps.
-- Runs a two-pass `palettegen` / `paletteuse` conversion (or a single-pass fast mode) with `child_process.spawn`, streaming progress from ffmpeg.
-- Imports the result with `eagle.item.addFromPath()`, placing it in the source item's folder.
-
 ## Troubleshooting
 
 - **"No video selected."** — select a video in the Eagle grid first, then refresh.
