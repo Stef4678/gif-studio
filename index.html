@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GIF Studio</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <span class="app-badge">GIF</span>
+      <div class="title-wrap">
+        <h1>GIF Studio</h1>
+        <p class="tagline">Any clip → a looping GIF</p>
+        <p class="statline" id="statline"></p>
+      </div>
+    </header>
+
+    <!-- Fatal init error -->
+    <section id="view-error" class="view hidden">
+      <div class="card notice">
+        <p id="fatal-msg"></p>
+        <div class="actions">
+          <button id="btn-close-error" class="btn primary">Close</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FFmpeg dependency missing -->
+    <section id="view-no-ffmpeg" class="view hidden">
+      <div class="card notice">
+        <p>This plugin needs the FFmpeg dependency plugin to convert videos.</p>
+        <div class="actions">
+          <button id="btn-install-ffmpeg" class="btn primary">Install FFmpeg</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- No video selected -->
+    <section id="view-no-video" class="view hidden">
+      <div class="card notice">
+        <p>No video selected.</p>
+        <p class="muted">Select one or more videos in your Eagle library, then try again.</p>
+        <div class="actions">
+          <button id="btn-retry" class="btn primary">Refresh selection</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="view-ready" class="view hidden">
+      <div class="error-bar hidden" id="error-bar"></div>
+
+      <div class="film source-card">
+        <div class="film-head">
+          <span class="eyebrow"><span class="dot"></span>Source</span>
+          <select id="video-picker" class="hidden" title="Choose a video"></select>
+        </div>
+        <div class="source-name" id="source-name"></div>
+        <div class="source-meta" id="source-meta"></div>
+        <div class="source-path" id="source-path"></div>
+      </div>
+
+      <div class="card">
+        <div class="settings-grid">
+          <label>Start (s)
+            <input id="start" type="number" min="0" step="0.1" value="0">
+          </label>
+          <label>End (s)
+            <input id="end" type="number" min="0" step="0.1" value="" placeholder="video end">
+          </label>
+          <label>Shape
+            <select id="shape">
+              <option value="original" selected>Original</option>
+              <option value="square">Square (1:1)</option>
+              <option value="portrait">Portrait (9:16)</option>
+              <option value="landscape">Landscape (16:9)</option>
+            </select>
+          </label>
+          <label>Width (px)
+            <input id="width" type="number" min="16" max="4096" step="1" value="480">
+          </label>
+          <label>Preset
+            <select id="preset">
+              <option value="high">High (larger)</option>
+              <option value="medium" selected>Medium</option>
+              <option value="low">Low (smaller)</option>
+            </select>
+          </label>
+          <label>FPS
+            <input id="fps" type="number" min="1" max="60" step="1" value="12">
+          </label>
+          <label>Speed
+            <select id="speed">
+              <option value="0.25">0.25x (slow-mo)</option>
+              <option value="0.5">0.5x (slow-mo)</option>
+              <option value="1" selected>1x (normal)</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+              <option value="3">3x</option>
+              <option value="4">4x</option>
+              <option value="8">8x</option>
+              <option value="16">16x (time-lapse)</option>
+              <option value="32">32x (time-lapse)</option>
+              <option value="64">64x (time-lapse)</option>
+            </select>
+          </label>
+          <label>Palette
+            <select id="palette">
+              <option value="best" selected>2-pass (best quality)</option>
+              <option value="fast">1-pass (faster)</option>
+            </select>
+          </label>
+          <label>Loop
+            <select id="loop-mode">
+              <option value="forever" selected>Loop forever</option>
+              <option value="once">Play once</option>
+              <option value="count">Repeat N times</option>
+            </select>
+          </label>
+          <label id="label-loop-count" class="hidden">Repeat count
+            <input id="loop-count" type="number" min="1" max="100" step="1" value="3">
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span>Creative</span></div>
+        <div class="settings-grid">
+          <label>Motion
+            <select id="motion">
+              <option value="normal" selected>Normal</option>
+              <option value="reverse">Reverse (play backward)</option>
+              <option value="boomerang">Boomerang (back &amp; forth)</option>
+            </select>
+          </label>
+          <label>Filter
+            <select id="filter">
+              <option value="none" selected>None</option>
+              <option value="grayscale">Grayscale</option>
+              <option value="sepia">Sepia</option>
+              <option value="warm">Warm</option>
+              <option value="cool">Cool</option>
+              <option value="vivid">Vivid</option>
+              <option value="cinematic">Cinematic</option>
+              <option value="vignette">Vignette</option>
+              <option value="invert">Invert</option>
+            </select>
+          </label>
+          <label>Style effect
+            <select id="style">
+              <option value="none" selected>None</option>
+              <option value="glitch">Glitch / VHS</option>
+              <option value="pixelsort">Pixel sort (melt)</option>
+              <option value="8bit">8-bit pixelation</option>
+              <option value="cinemagraph">Cinemagraph (still + motion band)</option>
+              <option value="vaporwave">Vaporwave / neon</option>
+              <option value="duotone">Duo-tone</option>
+              <option value="ascii">ASCII art</option>
+              <option value="rounded">Rounded corners</option>
+              <option value="polaroid">Polaroid frame</option>
+              <option value="lightleak">Light leak</option>
+              <option value="rain">Rain</option>
+              <option value="snow">Snow</option>
+              <option value="dust">Dust &amp; scratches</option>
+              <option value="kaleidoscope">Kaleidoscope</option>
+              <option value="zoomburst">Zoom burst</option>
+              <option value="colorcycle">Color cycling</option>
+              <option value="scanlines">Scanline interlacing</option>
+              <option value="rgbshake">RGB split &amp; shake</option>
+              <option value="thermal">Predator thermal</option>
+              <option value="nightvision">Night vision HUD</option>
+              <option value="xray">X-ray inverse</option>
+              <option value="matrix">Green code rain</option>
+              <option value="mirror">Mirror</option>
+              <option value="splitgrid">Split-screen grid</option>
+              <option value="posterize">Posterization</option>
+              <option value="solarize">Solarization</option>
+              <option value="glow">Glow &amp; bloom</option>
+              <option value="trails">Time-warp trails</option>
+              <option value="grain">Film grain</option>
+              <option value="blueprint">Blueprint drawing</option>
+              <option value="prism">Glass prism</option>
+              <option value="emberdust">Floating ember dust</option>
+              <option value="neonrain">Cyberpunk neon rain</option>
+              <option value="fog">Smoke &amp; fog</option>
+              <option value="handheld">Handheld shake</option>
+              <option value="emboss">Emboss &amp; engraving</option>
+              <option value="watercolor">Watercolor wash</option>
+              <option value="paper">Crumpled paper</option>
+              <option value="aerochrome">Infrared aerochrome</option>
+              <option value="chromadisp">Chroma displacement</option>
+              <option value="colorinvert">Color inversion</option>
+              <option value="stutter">Frame-rate stutter</option>
+              <option value="strobe">Strobe flash</option>
+              <option value="hyperlapse">Hyperlapse sweep</option>
+              <option value="fisheye">Fish-eye warp</option>
+              <option value="glass">Broken glass</option>
+              <option value="pushzoom">Push-in zoom</option>
+              <option value="chalk">Chalkboard sketch</option>
+              <option value="linocut">Linocut stamp</option>
+              <option value="phosphor">Phosphor glow</option>
+              <option value="subsurface">Subsurface glow</option>
+              <option value="asyncsplit">Async split-screen</option>
+              <option value="pixelshuffle">Pixel shuffling</option>
+              <option value="vectorscope">Vector scope</option>
+              <option value="crtmoire">CRT moiré</option>
+              <option value="cyanotype">Cyanotype blueprint</option>
+              <option value="moltenmetal">Molten metal liquid</option>
+              <option value="crosshatch">Cross-hatch etching</option>
+              <option value="mimeograph">Mimeograph bleed</option>
+              <option value="newsprint">Newsprint misalignment</option>
+              <option value="inkwash">Ink wash dissolve</option>
+              <option value="macroblock">Macroblock pixels</option>
+              <option value="greenspill">Green screen spill</option>
+              <option value="interlaced">Interlaced combing</option>
+              <option value="isometric">Isometric grid</option>
+              <option value="sonar">Sonar pulse</option>
+              <option value="nebula">Nebula gas bloom</option>
+              <option value="solarflare">Solar flare artifacts</option>
+              <option value="aurora">Aurora borealis glow</option>
+            </select>
+          </label>
+          <label class="grid-wide">Text / emoji overlay
+            <input id="caption" type="text" value="" placeholder="e.g. my cat 🔥  (optional)">
+          </label>
+          <label>Font size
+            <input id="caption-size" type="number" min="8" max="400" step="1" value="32">
+          </label>
+          <label>Color
+            <input id="caption-color" type="color" value="#ffffff">
+          </label>
+          <label>Position
+            <select id="caption-pos">
+              <option value="top">Top</option>
+              <option value="middle" selected>Middle</option>
+              <option value="bottom">Bottom</option>
+            </select>
+          </label>
+          <label class="check-label">
+            <input id="caption-anim" type="checkbox">
+            <span>Animate (scroll)</span>
+          </label>
+          <label class="grid-wide">Chroma key (transparent background)
+            <span class="inline-row">
+              <input id="chroma" type="checkbox" class="inline-check">
+              <select id="chroma-color">
+                <option value="0x00FF00" selected>Green screen</option>
+                <option value="0x0000FF">Blue screen</option>
+                <option value="0xFF00FF">Magenta</option>
+                <option value="0xFFFFFF">White</option>
+              </select>
+              <span class="muted">similarity</span>
+              <input id="chroma-sim" type="number" min="0" max="1" step="0.05" value="0.1">
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span>Optimization</span></div>
+        <div class="settings-grid">
+          <label>Dithering
+            <select id="dither">
+              <option value="sierra2_4a" selected>Sierra L2A (smooth)</option>
+              <option value="floyd_steinberg">Floyd-Steinberg</option>
+              <option value="bayer">Bayer (dotted)</option>
+              <option value="none">None</option>
+            </select>
+          </label>
+          <label>Max colors
+            <select id="colors">
+              <option value="256" selected>256</option>
+              <option value="128">128 (smaller)</option>
+              <option value="64">64 (smallest)</option>
+            </select>
+          </label>
+          <label>Frame skip
+            <select id="frame-skip">
+              <option value="1" selected>None</option>
+              <option value="2">Every 2nd frame</option>
+              <option value="3">Every 3rd frame</option>
+            </select>
+          </label>
+          <label class="grid-wide">Subtitle file (burn-in)
+            <input id="subs" type="text" value="" placeholder="C:\path\captions.srt (optional)">
+          </label>
+        </div>
+      </div>
+
+      <div class="actions convert-row">
+        <button id="btn-convert" class="btn primary big convert">Convert to GIF</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span>Showcase &amp; Export</span></div>
+        <p class="muted showcase-hint">
+          Pick effects to combine into one looping GIF or export as stills. <b>Showcase GIF</b> renders each
+          effect for the chosen seconds, then joins them into a single GIF. <b>Export images</b> saves one JPG
+          still per effect into a folder you choose.
+        </p>
+        <div id="showcase-effects" class="effect-grid"></div>
+        <div class="settings-grid showcase-opts">
+          <label>Seconds per effect
+            <input id="showcase-seconds" type="number" min="1" max="30" step="1" value="2">
+          </label>
+          <label>Still at (s)
+            <input id="showcase-frame" type="number" min="0" step="0.1" value="1">
+          </label>
+        </div>
+        <div class="actions showcase-actions">
+          <button id="btn-export-jpgs" class="btn">Export effect images</button>
+          <button id="btn-showcase" class="btn primary">Generate showcase GIF</button>
+        </div>
+      </div>
+
+      <p class="about-desc">Turn any video in your library into a looping GIF — right from Eagle. Pick from 69 one-click style effects, add a caption or emoji, then preview before you convert. The finished GIF lands back in your library, next to the source video.</p>
+    </section>
+
+    <!-- Preview -->
+    <section id="view-preview" class="view hidden">
+      <div class="film done-card">
+        <div class="film-head">
+          <span class="eyebrow"><span class="dot"></span>Preview</span>
+          <span class="muted" id="preview-tag"></span>
+        </div>
+        <img id="preview-img" class="result-img preview-img" alt="Preview">
+        <p class="muted" id="preview-note"></p>
+        <div class="actions">
+          <button id="btn-preview-back" class="btn">Edit settings</button>
+          <button id="btn-preview-convert" class="btn primary big">Convert to GIF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Export done -->
+    <section id="view-export-done" class="view hidden">
+      <div class="film done-card">
+        <div class="film-head">
+          <span class="eyebrow"><span class="dot"></span>Exported — effect images</span>
+        </div>
+        <div class="result-name">Saved to</div>
+        <p class="muted" id="export-done-dir"></p>
+        <p class="muted" id="export-done-note"></p>
+        <div class="actions">
+          <button id="btn-export-again" class="btn">Export more</button>
+          <button id="btn-export-close" class="btn primary">Close</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Converting -->
+    <section id="view-converting" class="view hidden">
+      <div class="film">
+        <div class="film-head">
+          <span id="status">Converting…</span>
+          <span id="percent" class="percent"></span>
+        </div>
+        <div class="bar"><div id="bar-fill" class="bar-fill"></div></div>
+        <p class="eta-line" id="eta-line"></p>
+        <div class="actions">
+          <button id="btn-cancel" class="btn">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Done -->
+    <section id="view-done" class="view hidden">
+      <div class="film done-card">
+        <div class="film-head">
+          <span class="eyebrow"><span class="dot"></span>Done — in your library</span>
+        </div>
+        <img id="result-img" class="result-img" alt="Resulting GIF">
+        <div class="result-name" id="result-name"></div>
+        <p class="muted" id="result-note"></p>
+        <div class="actions">
+          <button id="btn-another" class="btn">Convert another</button>
+          <button id="btn-close-done" class="btn primary">Close</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
